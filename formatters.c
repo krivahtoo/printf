@@ -13,7 +13,36 @@ int format_number(int n)
 
 	if (n < 0)
 		count = _putchar('-');
-	return (print_int(n) + count);
+	return (print_int(_abs(n)) + count);
+}
+
+/**
+ * format_unsigned - print formatted unsigned integer
+ *
+ * @n: number to print
+ * @specifier: base to use
+ *
+ * Return: number of bytes printed
+ */
+int format_unsigned(unsigned int n, char specifier)
+{
+	int count = 0;
+
+	switch (specifier)
+	{
+		case 'X':
+		case 'x':
+			count += print_hex(n, specifier == 'X');
+			break;
+		case 'o':
+			count += print_octal(n);
+			break;
+		case 'u':
+			count += print_int(n);
+			break;
+	}
+
+	return (count);
 }
 
 /**

@@ -42,6 +42,13 @@ int handle_format(const char *fmt, va_list *args, int *pos)
 				unsigned_num = (unsigned int)va_arg(*args, int);
 				n += format_binary(unsigned_num);
 				break;
+			case 'u':
+			case 'o':
+			case 'x':
+			case 'X':
+				unsigned_num = va_arg(*args, unsigned int);
+				n += format_unsigned(unsigned_num, specifier);
+				break;
 			case '%':
 				n += _putchar('%');
 				break;
