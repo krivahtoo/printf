@@ -19,7 +19,7 @@ int format_number(int n)
 /**
  * format_string - print formatted string
  *
- * @s: string pointer to print
+ * @str: string pointer to print
  *
  * Return: number of bytes printed
  */

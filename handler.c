@@ -51,6 +51,5 @@ int handle_format(const char *fmt, va_list *args, int *pos)
 		}
 		*pos += 1;
 	}
-
 	return (n);
 }
