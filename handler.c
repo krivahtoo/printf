@@ -16,6 +16,7 @@ int handle_format(const char *fmt, va_list *args, int *pos)
 	char specifier;
 	char *str;
 	unsigned char ch;
+	unsigned int unsigned_num = 0;
 
 	if (fmt[*pos] == '%')
 	{
@@ -36,6 +37,10 @@ int handle_format(const char *fmt, va_list *args, int *pos)
 			case 'i':
 				num = va_arg(*args, int);
 				n += format_number(num);
+				break;
+			case 'b':
+				unsigned_num = (unsigned int)va_arg(*args, int);
+				n += format_binary(unsigned_num);
 				break;
 			case '%':
 				n += _putchar('%');
