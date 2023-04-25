@@ -1,55 +1,94 @@
 #include "main.h"
+#include <stdarg.h>
 
 /**
  * format_number - print formatted number
  *
+ * @buf: print buffer
  * @n: number to print
  *
  * Return: number of bytes printed
  */
-int format_number(int n)
+int format_number(buf_t *buf, int n)
 {
 	int count = 0;
 
 	if (n < 0)
-		count = _putchar('-');
-	return (print_int(n) + count);
+		count = putchar_buffered(buf, '-');
+	return (print_int(buf, _abs(n)) + count);
+}
+
+/**
+ * format_unsign - print formatted unsigned integer
+ *
+ * @buf: print buffer
+ * @n: number to print
+ * @specifier: base to use
+ *
+ * Return: number of bytes printed
+ */
+int format_unsign(buf_t *buf, unsigned int n, char specifier)
+{
+	int count = 0;
+
+	switch (specifier)
+	{
+		case 'X':
+		case 'x':
+			count += print_hex(buf, n, specifier == 'X', 0);
+			break;
+		case 'o':
+			count += print_octal(buf, n);
+			break;
+		case 'u':
+			count += print_int(buf, n);
+			break;
+	}
+
+	return (count);
 }
 
 /**
  * format_string - print formatted string
  *
+ * @buf: print buffer
  * @str: string pointer to print
  *
  * Return: number of bytes printed
  */
-int format_string(char *str)
+int format_string(buf_t *buf, char *str)
 {
 	if (str == NULL)
 		str = "(null)";
-	return (_puts(str));
+	return (puts_buffered(buf, str));
 }
 
 /**
- * format_binary - print binary for unsigned integer
+ * format_custom - print formatted custom specifiers
  *
- * @n: string pointer to print
+ * @buf: print buffer
+ * @args: arguments list
+ * @specifier: custom specifier
  *
  * Return: number of bytes printed
  */
-int format_binary(unsigned int n)
+int format_custom(buf_t *buf, va_list *args, char specifier)
 {
-	int i = 0, count = 0;
-	int arr[32];
+	int count = 0;
 
-	while (n > 0)
+	switch (specifier)
 	{
-		arr[i++] = n % 2;
-		n /= 2;
+		case 'b':
+			count += print_binary(buf, va_arg(*args, unsigned int));
+			break;
+		case 'r':
+			break;
+		case 'R':
+			break;
+		case 'S':
+			count += print_string(buf, va_arg(*args, char *));
+			break;
 	}
-
-	while (--i >= 0)
-		count += _putchar(arr[i] + '0');
 
 	return (count);
 }

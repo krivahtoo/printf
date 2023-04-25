@@ -4,13 +4,71 @@
 #include <stdarg.h>
 #include <stdlib.h>
 
+#define BUFFER_SIZE 1024
+
+/**
+ * struct format_options - format specifier options
+ *
+ * @flags: conversion flags
+ * @dollar: dollar sign passed
+ * @width: field width
+ * @precision: precision
+ * @length: length modifiers
+ */
+typedef struct format_options
+{
+	char *flags;
+	char dollar;
+	int width;
+	int precision;
+	int length;
+} fmt_opt_t;
+
+/**
+ * struct buffer - contain buffer and current position on buffer
+ *
+ * @p: pointer to buffered characters
+ * @pos: current position
+ */
+typedef struct buffer
+{
+	char *p;
+	int pos;
+} buf_t;
+
+int print_buffer(buf_t *buf);
+int putchar_buffered(buf_t *buf, char c);
+int puts_buffered(buf_t *buf, char *p);
+
 int _printf(const char *format, ...);
-int _putchar(char c);
-int _puts(char *s);
-int print_int(int n);
-int format_string(char *str);
-int format_number(int n);
-int format_binary(unsigned int n);
-int handle_format(const char *fmt, va_list *args, int *pos);
+int _abs(int n);
+int print_int(buf_t *buf, unsigned int n);
+int print_hex(buf_t *buf, unsigned int n, int caps, int length);
+int print_octal(buf_t *buf, unsigned int n);
+int print_binary(buf_t *buf, unsigned int n);
+int print_string(buf_t *buf, char *str);
+int format_string(buf_t *buf, char *str);
+int format_number(buf_t *buf, int n);
+int format_unsign(buf_t *buf, unsigned int n, char specifier);
+int format_custom(buf_t *buf, va_list *args, char specifier);
+void handle_precision(
+	const char *fmt,
+	va_list *args,
+	fmt_opt_t *fmt_opt,
+	int *pos
+);
+void handle_options(
+	const char *fmt,
+	va_list *args,
+	fmt_opt_t *fmt_opt,
+	int *pos
+);
+int handle_specifier(
+	char specifier,
+	buf_t *buf,
+	va_list *args,
+	fmt_opt_t *fmt_opt
+);
+int handle_format(const char *fmt, buf_t *buf, va_list *args, int *pos);
 
 #endif /* MAIN_H */
