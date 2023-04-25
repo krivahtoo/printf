@@ -12,10 +12,10 @@
  */
 int handle_format(const char *fmt, va_list *args, int *pos)
 {
-	int n = 0;
+	int n = 0, num;
 	char specifier;
 	char *str;
-	char ch;
+	unsigned char ch;
 
 	if (fmt[*pos] == '%')
 	{
@@ -25,12 +25,17 @@ int handle_format(const char *fmt, va_list *args, int *pos)
 		switch (specifier)
 		{
 			case 'c':
-				ch = (char)va_arg(*args, int);
+				ch = (unsigned char)va_arg(*args, int);
 				n += _putchar(ch);
 				break;
 			case 's':
 				str = va_arg(*args, char *);
-				n += _puts(str);
+				n += format_string(str);
+				break;
+			case 'd':
+			case 'i':
+				num = va_arg(*args, int);
+				n += format_number(num);
 				break;
 			case '%':
 				n += _putchar('%');
