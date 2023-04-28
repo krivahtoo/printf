@@ -15,6 +15,8 @@ int _printf(const char *format, ...)
 	buf_t buffer = { NULL, 0 };
 
 	buffer.p = malloc(sizeof(char) * BUFFER_SIZE);
+	if (buffer.p == NULL)
+		return (-1);
 
 	va_start(args, format);
 
@@ -31,7 +33,7 @@ int _printf(const char *format, ...)
 				return (-1);
 			x = handle_format(format, &buffer, &args, &i);
 
-			if (x > 0)
+			if (x >= 0)
 			{
 				count += x;
 				continue;
@@ -43,7 +45,7 @@ int _printf(const char *format, ...)
 
 	va_end(args);
 
-	print_buffer(&buffer);
+	count += print_buffer(&buffer);
 
 	free(buffer.p);
 

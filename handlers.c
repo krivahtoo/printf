@@ -2,6 +2,43 @@
 #include <stdarg.h>
 
 /**
+ * handle_flags - handle flags
+ *
+ * @fmt: format string pointer
+ * @fmt_opt: options to update
+ * @pos: current possition in fmt
+ */
+void handle_flags(
+		const char *fmt,
+		fmt_opt_t *fmt_opt,
+		int *pos)
+{
+	while (fmt[*pos] == '-' || fmt[*pos] == '+' ||
+			fmt[*pos] == ' ' || fmt[*pos] == '#' || fmt[*pos] == '0')
+	{
+		switch (fmt[*pos])
+		{
+			case '-':
+				fmt_opt->flags |= FLAG_MINUS;
+				break;
+			case '+':
+				fmt_opt->flags |= FLAG_PLUS;
+				break;
+			case ' ':
+				fmt_opt->flags |= FLAG_SPACE;
+				break;
+			case '#':
+				fmt_opt->flags |= FLAG_HASH;
+				break;
+			case '0':
+				fmt_opt->flags |= FLAG_ZERO;
+				break;
+		}
+		*pos += 1;
+	}
+}
+
+/**
  * handle_precision - handle precition
  *
  * @fmt: format string pointer
@@ -46,13 +83,7 @@ void handle_options(
 		fmt_opt_t *fmt_opt,
 		int *pos)
 {
-
-	while (fmt[*pos] == '-' || fmt[*pos] == '+' ||
-			fmt[*pos] == ' ' || fmt[*pos] == '#' || fmt[*pos] == '0')
-	{
-		/* get flags */
-		*pos += 1;
-	}
+	handle_flags(fmt, fmt_opt, pos);
 
 	if (fmt[*pos] == '*')
 	{
@@ -77,10 +108,12 @@ void handle_options(
 	/* length modifiers */
 	if (fmt[*pos] == 'l')
 	{
+		fmt_opt->length = 1;
 		*pos += 1;
 	}
 	else if (fmt[*pos] == 'h')
 	{
+		fmt_opt->length = 0;
 		*pos += 1;
 	}
 }
@@ -102,24 +135,19 @@ int handle_specifier(
 	fmt_opt_t *fmt_opt
 )
 {
-	int n = 0, num;
-	char *str;
-	unsigned int unsigned_num = 0;
+	int n = 0;
 
-	(void)fmt_opt;
 	switch (specifier)
 	{
 		case 'c':
 			n += putchar_buffered(buf, (unsigned char)va_arg(*args, int));
 			break;
 		case 's':
-			str = va_arg(*args, char *);
-			n += format_string(buf, str);
+			n += format_string(buf, va_arg(*args, char *));
 			break;
 		case 'd':
 		case 'i':
-			num = va_arg(*args, int);
-			n += format_number(buf, num);
+			n += format_number(buf, va_arg(*args, int), fmt_opt->flags);
 			break;
 		case 'b':
 		case 'S':
@@ -131,8 +159,10 @@ int handle_specifier(
 		case 'o':
 		case 'x':
 		case 'X':
-			unsigned_num = va_arg(*args, unsigned int);
-			n += format_unsign(buf, unsigned_num, specifier);
+			n += format_unsign(buf, va_arg(*args, unsigned int), specifier, fmt_opt);
+			break;
+		case 'p':
+			n += print_address(buf, va_arg(*args, void *));
 			break;
 		case '%':
 			n += putchar_buffered(buf, '%');
@@ -157,7 +187,7 @@ int handle_format(const char *fmt, buf_t *buf, va_list *args, int *pos)
 {
 	int n = 0;
 	char specifier;
-	fmt_opt_t fmt_opt;
+	fmt_opt_t fmt_opt = { 0, 0, 0, 0, 0 };
 
 	if (fmt[*pos] == '%')
 	{

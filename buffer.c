@@ -12,7 +12,8 @@ int print_buffer(buf_t *buf)
 {
 	int count;
 
-	count = write(STDOUT_FILENO, buf->p, buf->pos);
+	write(STDOUT_FILENO, buf->p, buf->pos);
+	count = buf->pos;
 	buf->pos = 0;
 	return (count);
 }
@@ -32,7 +33,7 @@ int putchar_buffered(buf_t *buf, char c)
 	if (buf->pos >= BUFFER_SIZE)
 		return (print_buffer(buf));
 
-	return (1);
+	return (0);
 }
 
 /**
@@ -45,10 +46,10 @@ int putchar_buffered(buf_t *buf, char c)
  */
 int puts_buffered(buf_t *buf, char *s)
 {
-	int i = 0;
+	int i = 0, n = 0;
 
 	for (; s[i] != '\0'; i++)
-		putchar_buffered(buf, s[i]);
+		n += putchar_buffered(buf, s[i]);
 
-	return (i);
+	return (n);
 }

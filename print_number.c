@@ -1,20 +1,6 @@
 #include "main.h"
 
 /**
- * _abs - get absolute of a number
- *
- * @n: number
- *
- * Return: absolute number
- */
-int _abs(int n)
-{
-	if (n < 0)
-		return ((-1) * n);
-	return (n);
-}
-
-/**
  * print_int - print a number.
  *
  * @buf: print buffer
@@ -43,18 +29,28 @@ int print_int(buf_t *buf, unsigned int n)
  * @n: string pointer to print
  * @caps: if capitals are printed
  * @length: lenght of characters
+ * @prefix: if prefix is added
  *
  * Return: number of bytes printed
  */
-int print_hex(buf_t *buf, unsigned int n, int caps, int length)
+int print_hex(
+	buf_t *buf,
+	unsigned long int n,
+	int caps,
+	int length,
+	int prefix
+)
 {
 	int i = 0, count = 0;
-	char arr[9] = { 0 };
+	char arr[16] = { 0 };
 	char lower[] = "0123456789abcdef";
 	char upper[] = "0123456789ABCDEF";
 
 	if (n == 0)
 		arr[i++] = 0;
+
+	if (prefix)
+		count += puts_buffered(buf, caps ? "0X" : "0x");
 
 	while (n > 0)
 	{
@@ -62,8 +58,8 @@ int print_hex(buf_t *buf, unsigned int n, int caps, int length)
 		n /= 16;
 	}
 
-	if (length > 0 && length < 9)
-		i = length;
+	if (length > 0 && length < 16)
+		i = prefix && length > 2 ? length - 2 : length;
 
 	while (i > 0)
 	{
@@ -80,16 +76,19 @@ int print_hex(buf_t *buf, unsigned int n, int caps, int length)
  *
  * @buf: print buffer
  * @n: number to print
+ * @prefix: if prefix is added
  *
  * Return: number of bytes printed
  */
-int print_octal(buf_t *buf, unsigned int n)
+int print_octal(buf_t *buf, unsigned int n, int prefix)
 {
 	int i = 0, count = 0;
 	int arr[32];
 
 	if (n == 0)
 		arr[i++] = 0;
+	else if (prefix)
+		count += putchar_buffered(buf, '0');
 
 	while (n > 0)
 	{
